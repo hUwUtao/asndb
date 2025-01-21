@@ -7,7 +7,7 @@ fn bench_load_from_tsv(c: &mut Criterion) {
     c.bench_function("Load from TSV", |b| {
         b.iter(|| {
             let mut db = IPDatabase::new();
-            db.load_from_tsv(path).unwrap();
+            db.load_from_tsv_file(path).unwrap();
         });
     });
 }
@@ -19,7 +19,7 @@ fn bench_save_to_binary(c: &mut Criterion) {
     c.bench_function("Save to binary", |b| {
         b.iter(|| {
             let mut db = IPDatabase::new();
-            db.load_from_tsv(path).unwrap();
+            db.load_from_tsv_file(path).unwrap();
             db.save_to_file(binary_path).unwrap();
         });
     });

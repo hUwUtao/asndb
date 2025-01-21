@@ -12,13 +12,11 @@ name = "general"
 harness = false
 
 [workspace]
-members = [
-    "service"
-]
+default-members = ["service", "./"]
+members = ["service"]
 
 [dependencies]
 byteorder = "1.5.0"
-hashbrown = "0.12"
 twox-hash = "2.1.0"
 serde = { version = "*", optional = true }
 

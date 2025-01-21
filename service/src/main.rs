@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
@@ -13,15 +14,14 @@ use log::info;
 use tokio::net::TcpListener;
 use tokio::sync::RwLock;
 
-type GenericError = Box<dyn std::error::Error + Send + Sync>;
-type Result<T> = std::result::Result<T, GenericError>;
+// type GenericError = Box<dyn std::error::Error + Send + Sync>;
 // type BoxBody = http_body_util::combinators::BoxBody<Bytes, hyper::Error>;
 
 // static INTERNAL_SERVER_ERROR: &[u8] = b"Internal Server Error";
-static NOTFOUND: &[u8] = b"Not Found";
+// static NOTFOUND: &[u8] = b"Not Found";
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), Box<dyn Error>> {
     femme::start();
 
     let addr: SocketAddr = "127.0.0.1:1337".parse().unwrap();
@@ -30,9 +30,8 @@ async fn main() -> Result<()> {
     info!("Listening on http://{}", addr);
 
     let db = Arc::new(RwLock::new(IPDatabase::load_from_file(
-        "../ip_database.bin",
+        "./ip_database.bin",
     )?));
-    // db.write().await.load_from_tsv("../ip2asn-combined.tsv")?;
     loop {
         let (stream, _) = listener.accept().await?;
         let io = TokioIo::new(stream);
@@ -47,7 +46,7 @@ async fn main() -> Result<()> {
                             if _req.uri().path() != "/api/ip" {
                                 return Ok(Response::builder()
                                     .status(StatusCode::NOT_FOUND)
-                                    .body(Full::new(Bytes::from(NOTFOUND)))
+                                    .body(Full::new(Bytes::new()))
                                     .unwrap());
                             }
                             if let Some(a) = db.read().await.query(_req.uri().query().unwrap()) {
@@ -64,7 +63,7 @@ async fn main() -> Result<()> {
                             } else {
                                 Ok(Response::builder()
                                     .status(StatusCode::NOT_FOUND)
-                                    .body(Full::new(Bytes::from(NOTFOUND)))
+                                    .body(Full::new(Bytes::new()))
                                     .unwrap())
                             }
                         }

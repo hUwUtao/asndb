@@ -8,7 +8,7 @@ fn main() -> io::Result<()> {
 
     // Load from TSV and check time
     let load_start_time = Instant::now();
-    db.load_from_tsv(path)?;
+    db.load_from_tsv_file(path)?;
     let load_duration = load_start_time.elapsed();
     println!("Time to load TSV: {:?}", load_duration);
 
